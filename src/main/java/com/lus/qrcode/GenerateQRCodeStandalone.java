@@ -41,7 +41,9 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
-
+/*
+ * Created By Sijohn
+ */
 
 public class GenerateQRCodeStandalone {
 	
