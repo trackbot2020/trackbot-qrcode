@@ -42,7 +42,7 @@ import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfWriter;
 
 /*
- * Created By Sijohn
+ * Created By Sijohn Mathew
  */
 
 public class GenerateQRCodeStandalone {
