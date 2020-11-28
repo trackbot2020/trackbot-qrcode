@@ -43,12 +43,13 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 /*
  * Created By Sijohn Mathew
+ * Updated
  */
 
 public class GenerateQRCodeStandalone {
 	
-	public static final String FS_PROJECT_ID= "smartmonitor-test";
-	public static final String APARTMENT_ID= "1002-SJR Verity";
+	public static final String FS_PROJECT_ID= "trackbot-prod";
+	public static final String APARTMENT_ID= "1006-AHAD-EUPHORIA";
 	public static final String QR_CODE_OUTPUT_DEST_ROOT = "C:\\D-Drive\\Pet-Projects\\LetUSense\\000-PHASE-2\\QR-CODE-Output\\"+APARTMENT_ID+"\\";
     
 	public static void main(String[] args) {
@@ -62,7 +63,14 @@ public class GenerateQRCodeStandalone {
 			if(!qrCodeBeanList.isEmpty()) {
 				List<QRImageTagsBean> qrImageTagsLst = new ArrayList<>();
 				for (QRCodeBean qrCodeBean : qrCodeBeanList) {
-					String qrCodeString = APARTMENT_ID+"~"+qrCodeBean.getDeviceIdentifier();
+					String qrCodeType = "qrType:Device";
+					String docId = "Routing:/system";
+					String systemElement = "System:"+qrCodeBean.getServiceName();
+					String compElement = "Component:"+qrCodeBean.getComponentName();
+					String deviceElement = "Device:"+qrCodeBean.getDeviceName();
+					
+					//String qrCodeString = APARTMENT_ID+"~"+qrCodeBean.getDeviceIdentifier();
+					String qrCodeString = APARTMENT_ID+"~"+qrCodeType+"~"+docId+"~"+systemElement+"~"+compElement+"~"+deviceElement;
 					String qrCodeLabel = "System: "+qrCodeBean.getServiceName()+"\n"+"Component: "+qrCodeBean.getComponentName()+"\n"+"Device Name: "+qrCodeBean.getDeviceName();
 					qr.createQRCodeWithImage(qrCodeBean.getDeviceIdentifier(),qrCodeString,qrCodeLabel,qrImageTagsLst);
 				}
@@ -100,7 +108,8 @@ public class GenerateQRCodeStandalone {
 		    // Load QR image
 		    BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, config);
 		    // Load logo image
-		    File file = new File("C:\\D-Drive\\Pet-Projects\\LetUSense\\trackbot_mid.png");
+		    //File file = new File("C:\\D-Drive\\Pet-Projects\\LetUSense\\trackbot_mid.png");
+		    File file = new File("C:\\D-Drive\\Pet-Projects\\LetUSense\\000-PHASE-2\\QR-CODE-Output\\00_Logo\\trackbot_logo_with_text.png");
 		    BufferedImage logoImage = ImageIO.read(file);
 		    // Calculate the delta height and width between QR code and logo
 		    int deltaHeight = qrImage.getHeight() - logoImage.getHeight();
@@ -170,8 +179,8 @@ public class GenerateQRCodeStandalone {
 		CollectionReference collRef = db.collection("apartments").document(APARTMENT_ID).collection("SystemEquipmentDetails");
 
 		///apartments/1003-HM Symphony/DailyReadings/004_swimming_pool_main_pool_chlorine/lus_sys_data/004_swimming_pool_main_pool_chlorine
-
-		ApiFuture<QuerySnapshot> query2 =collRef.get();
+		//ApiFuture<QuerySnapshot> query2 =collRef.get();
+		ApiFuture<QuerySnapshot> query2 =collRef.whereEqualTo("ServiceName", "Water Bodies").get();
 		// ...
 		QuerySnapshot querySnapshot2 = query2.get();
 		List<QueryDocumentSnapshot> documents2 = querySnapshot2.getDocuments();
