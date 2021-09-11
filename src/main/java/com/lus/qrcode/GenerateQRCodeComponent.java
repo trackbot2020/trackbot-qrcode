@@ -43,18 +43,17 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 /*
  * Created By Sijohn Mathew
- * Updated
  */
 
-public class GenerateQRCodeStandalone {
+public class GenerateQRCodeComponent {
 	
 	public static final String FS_PROJECT_ID= "trackbot-prod";
-	public static final String APARTMENT_ID= "1011-Divyasree Elan";
-	public static final String QR_CODE_OUTPUT_DEST_ROOT = "/Users/sijohnmathew/projects/Trackbot/000-PHASE-2/QR-CODE-Output/"+APARTMENT_ID+"/";
+	public static final String APARTMENT_ID= "1001-TOTAL Windmills of Your Mind";
+	public static final String QR_CODE_OUTPUT_DEST_ROOT = "C:\\D-Drive\\Pet-Projects\\LetUSense\\000-PHASE-2\\QR-CODE-Output\\"+APARTMENT_ID+"\\Components\\";
     
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		GenerateQRCodeStandalone qr = new GenerateQRCodeStandalone();
+		GenerateQRCodeComponent qr = new GenerateQRCodeComponent();
 		qr.checkAndCreateDirectory();
 		//qr.createQRCodeWithImage();
 		ArrayList <QRCodeBean> qrCodeBeanList = new ArrayList<QRCodeBean>();
@@ -63,15 +62,15 @@ public class GenerateQRCodeStandalone {
 			if(!qrCodeBeanList.isEmpty()) {
 				List<QRImageTagsBean> qrImageTagsLst = new ArrayList<>();
 				for (QRCodeBean qrCodeBean : qrCodeBeanList) {
-					String qrCodeType = "qrType:Device";
+					String qrCodeType = "qrType:Component";
 					String docId = "Routing:/system";
 					String systemElement = "System:"+qrCodeBean.getServiceName();
 					String compElement = "Component:"+qrCodeBean.getComponentName();
-					String deviceElement = "Device:"+qrCodeBean.getDeviceName();
+					//String deviceElement = "Device:"+qrCodeBean.getDeviceName();
 					
 					//String qrCodeString = APARTMENT_ID+"~"+qrCodeBean.getDeviceIdentifier();
-					String qrCodeString = APARTMENT_ID+"~"+qrCodeType+"~"+docId+"~"+systemElement+"~"+compElement+"~"+deviceElement;
-					String qrCodeLabel = "System: "+qrCodeBean.getServiceName()+"\n"+"Component: "+qrCodeBean.getComponentName()+"\n"+"Device Name: "+qrCodeBean.getDeviceName();
+					String qrCodeString = APARTMENT_ID+"~"+qrCodeType+"~"+docId+"~"+systemElement+"~"+compElement;
+					String qrCodeLabel = "System: "+qrCodeBean.getServiceName()+"\n"+"Component: "+qrCodeBean.getComponentName();
 					qr.createQRCodeWithImage(qrCodeBean.getDeviceIdentifier(),qrCodeString,qrCodeLabel,qrImageTagsLst);
 				}
 				qr.createMergedPDF(qrImageTagsLst);
@@ -109,7 +108,7 @@ public class GenerateQRCodeStandalone {
 		    BufferedImage qrImage = MatrixToImageWriter.toBufferedImage(bitMatrix, config);
 		    // Load logo image
 		    //File file = new File("C:\\D-Drive\\Pet-Projects\\LetUSense\\trackbot_mid.png");
-		    File file = new File("/Users/sijohnmathew/projects/Trackbot/000-PHASE-2/QR-CODE-Output/00_Logo/trackbot_logo_with_text.png");
+		    File file = new File("C:\\D-Drive\\Pet-Projects\\LetUSense\\trackbot_color.png");
 		    BufferedImage logoImage = ImageIO.read(file);
 		    // Calculate the delta height and width between QR code and logo
 		    int deltaHeight = qrImage.getHeight() - logoImage.getHeight();
@@ -176,11 +175,11 @@ public class GenerateQRCodeStandalone {
 				.build();
 
 		Firestore db = firestoreOptions.getService();
-		CollectionReference collRef = db.collection("apartments").document(APARTMENT_ID).collection("SystemEquipmentDetails");
+		CollectionReference collRef = db.collection("apartments").document(APARTMENT_ID).collection("SystemComponentDetails");
 
 		///apartments/1003-HM Symphony/DailyReadings/004_swimming_pool_main_pool_chlorine/lus_sys_data/004_swimming_pool_main_pool_chlorine
-		//ApiFuture<QuerySnapshot> query2 =collRef.get();
-		ApiFuture<QuerySnapshot> query2 =collRef.whereEqualTo("ServiceName", "WTP").get();
+
+		ApiFuture<QuerySnapshot> query2 =collRef.get();
 		// ...
 		QuerySnapshot querySnapshot2 = query2.get();
 		List<QueryDocumentSnapshot> documents2 = querySnapshot2.getDocuments();
@@ -195,23 +194,18 @@ public class GenerateQRCodeStandalone {
 				System.out.println("Doc Name: " + document2.getId());
 				String docID = document2.getId();
 				Timestamp ts = document2.getUpdateTime();
-				String tempEquip = document2.getString("EquipmentName");
-				if(tempEquip != null && (tempEquip.toLowerCase().indexOf("pump") >=0 ||
-						tempEquip.toLowerCase().indexOf("motor") >=0 ||
-						tempEquip.toLowerCase().indexOf("blower") >=0)) {
-					System.out.println("=====THIS IS A ::"+tempEquip);
-					try {
-						qrBean.setComponentName(document2.getString("ComponentName"));
-						qrBean.setServiceName(document2.getString("ServiceName"));
-						qrBean.setDeviceName(document2.getString("EquipmentName"));
-						qrBean.setDeviceIdentifier(docID);
-						System.out.println("Adding docId to Arraylist:::"+docID);
-						qrCodeBeanList.add(qrBean);
-						
-					} catch (Exception e) {
-						// TODO: handle exception
-						e.printStackTrace();
-					}
+				
+				try {
+					qrBean.setComponentName(document2.getString("ComponentName"));
+					qrBean.setServiceName(document2.getString("ServiceName"));
+					//qrBean.setDeviceName(document2.getString("EquipmentName"));
+					qrBean.setDeviceIdentifier(docID);
+					System.out.println("Adding docId to Arraylist:::"+docID);
+					qrCodeBeanList.add(qrBean);
+					
+				} catch (Exception e) {
+					// TODO: handle exception
+					e.printStackTrace();
 				}
 				
 			}
